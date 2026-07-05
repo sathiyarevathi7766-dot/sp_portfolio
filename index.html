@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sathiyapriya K — Data Analyst & BI Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#070a12;color:#e8ecf3;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+#bg-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;display:block}
+.haze{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 50% 0%,rgba(7,10,18,0) 0%,rgba(7,10,18,.5) 60%,rgba(7,10,18,.96) 100%)}
+
+/* NAV */
+nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 5vw;position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(7,10,18,.6);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.1rem;color:#7de0d6;letter-spacing:.06em;cursor:pointer;user-select:none;transition:text-shadow .3s}
+.nav-logo:hover{text-shadow:0 0 18px rgba(125,224,214,.7)}
+.nav-logo span{font-size:.6rem;font-family:monospace;opacity:.45;letter-spacing:.12em;margin-left:4px;vertical-align:middle}
+.nav-links{display:flex;gap:1.4rem;align-items:center}
+.nav-links a{text-decoration:none;color:#9aaab8;font-size:13px;font-weight:500;cursor:pointer;transition:color .2s}
+.nav-links a:hover,.nav-links a.act{color:#7de0d6}
+.admin-btn{padding:.35rem .85rem;border-radius:5px;font-size:12px;font-weight:700;background:transparent;color:#7de0d6;border:1.5px solid rgba(125,224,214,.55);cursor:pointer;transition:background .2s,border-color .2s}
+.admin-btn:hover{background:rgba(125,224,214,.12);border-color:#7de0d6}
+
+/* TICKER */
+.ticker-wrap{position:relative;z-index:5;margin-top:58px;background:rgba(26,127,116,.8);color:#fff;overflow:hidden;white-space:nowrap;padding:8px 0;font-family:monospace;font-size:12px;letter-spacing:.04em;backdrop-filter:blur(4px)}
+.ticker-track{display:inline-block;animation:tk 32s linear infinite}
+.ticker-track span{margin:0 1.4rem}
+
+.page{position:relative;z-index:5}
+
+/* GLASS */
+.glass{background:rgba(20,26,38,.52);border:1px solid rgba(255,255,255,.1);border-radius:16px;backdrop-filter:blur(16px);box-shadow:0 20px 60px rgba(0,0,0,.45);transition:transform .15s ease-out,border-color .25s}
+.tilt{will-change:transform}
+
+/* HERO */
+.hero{max-width:1100px;margin:0 auto;padding:7rem 5vw 5rem;display:grid;grid-template-columns:1fr;align-items:center;min-height:92vh}
+.hero-eyebrow{font-family:monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7de0d6;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.eyebrow-line{display:inline-block;width:28px;height:1px;background:#7de0d6}
+h1{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,4.5vw,3.3rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;color:#fff;margin-bottom:1.2rem}
+h1 em{font-style:italic;color:#7de0d6;font-weight:400}
+.hero-summary{color:#b7c1d1;font-size:14.5px;line-height:1.78;max-width:500px;margin-bottom:2rem}
+.cta-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-primary{padding:.65rem 1.4rem;border-radius:6px;font-size:13px;font-weight:600;background:#1a7f74;color:#fff;border:2px solid #1a7f74;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:background .2s,transform .2s}
+.btn-primary:hover{background:#16a394;border-color:#16a394;transform:translateY(-2px)}
+.btn-outline{padding:.65rem 1.4rem;border-radius:6px;font-size:13px;font-weight:600;background:transparent;color:#7de0d6;border:2px solid rgba(125,224,214,.6);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:background .2s,transform .2s}
+.btn-outline:hover{background:rgba(125,224,214,.1);transform:translateY(-2px)}
+
+.stats-card{padding:2rem 1.8rem;color:#fff;display:flex;flex-direction:column;gap:1.4rem}
+.stat-divider{border:none;border-top:1px solid rgba(255,255,255,.1)}
+.stat-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;line-height:1;color:#7de0d6;margin-bottom:4px}
+.stat-label{font-family:monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9aaab8}
+
+/* HIGHLIGHT BAR */
+.hl-bar{padding:3rem 5vw;position:relative;z-index:5}
+.hl-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;text-align:center}
+.hl-num{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;color:#7de0d6;line-height:1;margin-bottom:6px}
+.hl-label{font-family:monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#9aaab8}
+
+/* SECTIONS */
+.section{max-width:1100px;margin:0 auto;padding:5.5rem 5vw;position:relative;z-index:5}
+.section-header{display:flex;align-items:baseline;gap:1rem;margin-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:1rem}
+.section-tag{font-family:monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7de0d6}
+.section-title{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:#fff}
+
+/* SKILLS */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem}
+.skill-card{padding:1.25rem 1.4rem}
+.skill-card:hover{border-color:rgba(125,224,214,.5)}
+.skill-icon-box{width:34px;height:34px;background:rgba(125,224,214,.14);border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:17px}
+.skill-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:7px}
+.tag-row{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-family:monospace;font-size:11px;padding:.2rem .55rem;border-radius:3px;background:rgba(125,224,214,.1);color:#7de0d6;font-weight:500;border:1px solid rgba(125,224,214,.18)}
+
+/* EXPERIENCE */
+.exp-item{display:grid;grid-template-columns:170px 1fr;gap:2rem;padding:1.75rem 1.6rem;margin-bottom:1.2rem}
+.exp-item:last-child{margin-bottom:0}
+.exp-date{font-family:monospace;font-size:11px;color:#7de0d6;letter-spacing:.08em;margin-bottom:4px}
+.exp-company{font-size:13px;color:#9aaab8;font-weight:500}
+.exp-badge{display:inline-block;margin-top:8px;font-family:monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:#1a7f74;color:#fff;padding:.2rem .5rem;border-radius:3px}
+.exp-h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:10px}
+.exp-ul{list-style:none}
+.exp-li{padding-left:1.1rem;position:relative;color:#b7c1d1;font-size:13.5px;margin-bottom:7px}
+.exp-li::before{content:'→';position:absolute;left:0;color:#7de0d6}
+
+/* PROJECTS */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.4rem}
+.project-card{overflow:hidden;display:flex;flex-direction:column}
+.project-card:hover{border-color:rgba(125,224,214,.5)}
+.proj-img{width:100%;height:180px;object-fit:cover;display:block}
+.proj-placeholder{width:100%;height:180px;background:linear-gradient(135deg,rgba(125,224,214,.12),rgba(26,127,116,.2));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+.proj-placeholder-icon{width:52px;height:52px;border-radius:10px;background:rgba(125,224,214,.15);border:1px dashed rgba(125,224,214,.3);display:flex;align-items:center;justify-content:center}
+.proj-placeholder-icon svg{opacity:.5}
+.proj-placeholder-text{font-family:monospace;font-size:10px;color:rgba(125,224,214,.4);letter-spacing:.08em}
+.proj-body{padding:1.25rem;flex:1;display:flex;flex-direction:column;gap:9px}
+.proj-top{display:flex;justify-content:space-between;align-items:flex-start}
+.proj-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:rgba(255,255,255,.15);line-height:1}
+.proj-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fff;line-height:1.3}
+.proj-desc{color:#b7c1d1;font-size:13px;line-height:1.65;flex:1}
+
+/* CERTS */
+.cert-list{display:flex;flex-direction:column;gap:10px}
+.cert-item{display:flex;align-items:center;gap:12px;padding:.9rem 1.3rem}
+.cert-item:hover{border-color:rgba(125,224,214,.5)}
+.cert-icon{width:34px;height:34px;background:rgba(125,224,214,.14);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.cert-title{font-size:14px;font-weight:600;color:#fff}
+.cert-sub{font-size:12px;color:#9aaab8;margin-top:2px}
+
+/* CONTACT */
+.contact-section{padding:5rem 5vw 7rem;text-align:center;position:relative;z-index:5}
+.contact-card{max-width:640px;margin:0 auto;padding:3rem 2.5rem}
+.contact-h2{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:8px}
+.contact-p{color:#b7c1d1;margin-bottom:2rem;font-size:15px}
+.contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.contact-link{display:flex;align-items:center;gap:6px;padding:.6rem 1.1rem;background:rgba(125,224,214,.08);border:1px solid rgba(125,224,214,.35);border-radius:6px;text-decoration:none;color:#fff;font-size:13px;font-weight:500;transition:background .18s,transform .18s}
+.contact-link:hover{background:rgba(125,224,214,.2);transform:translateY(-2px)}
+
+footer{padding:1.4rem 5vw;text-align:center;font-family:monospace;font-size:11px;color:#6a7585;position:relative;z-index:5}
+
+/* ══ ADMIN OVERLAY ══ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+
+/* Login modal */
+.lmodal{background:#0d1a1f;border:1px solid rgba(125,224,214,.22);border-radius:16px;width:min(92vw,340px);padding:2rem;text-align:center}
+.lmodal input{text-align:center}
+
+/* Admin modal */
+.amodal{background:#0a1118;border:1px solid rgba(125,224,214,.18);border-radius:18px;width:min(96vw,940px);max-height:90vh;overflow-y:auto;padding:2rem}
+.amodal::-webkit-scrollbar{width:4px}
+.amodal::-webkit-scrollbar-thumb{background:rgba(125,224,214,.2);border-radius:2px}
+.am-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem;padding-bottom:1rem;border-bottom:1px solid rgba(125,224,214,.12)}
+.am-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:#fff}
+.am-close{cursor:pointer;font-size:22px;color:rgba(255,255,255,.35);background:none;border:none;line-height:1;padding:4px 8px;border-radius:4px;transition:color .2s,background .2s}
+.am-close:hover{color:#fff;background:rgba(255,255,255,.08)}
+.atabs{display:flex;gap:6px;margin-bottom:1.4rem;flex-wrap:wrap}
+.atab{padding:.4rem .9rem;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.45);transition:all .2s}
+.atab.act{border-color:#7de0d6;background:rgba(125,224,214,.12);color:#7de0d6}
+.apane{display:none}
+.apane.act{display:block}
+
+/* Form elements */
+.flbl{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;display:block}
+.finp{width:100%;padding:.5rem .75rem;border:1px solid rgba(125,224,214,.16);border-radius:6px;font-size:13px;font-family:inherit;margin-bottom:10px;color:#fff;background:rgba(255,255,255,.05)}
+.finp:focus{outline:none;border-color:rgba(125,224,214,.6)}
+.ftarea{width:100%;padding:.5rem .75rem;border:1px solid rgba(125,224,214,.16);border-radius:6px;font-size:13px;font-family:inherit;margin-bottom:10px;color:#fff;background:rgba(255,255,255,.05);resize:vertical}
+.ftarea:focus{outline:none;border-color:rgba(125,224,214,.6)}
+.sbtn{padding:.55rem 1.25rem;border-radius:6px;font-size:13px;font-weight:600;background:#1a7f74;color:#fff;border:none;cursor:pointer;transition:background .2s}
+.sbtn:hover{background:#16a394}
+.obtn{padding:.48rem 1rem;border-radius:6px;font-size:12px;font-weight:600;background:transparent;color:#7de0d6;border:1px solid rgba(125,224,214,.28);cursor:pointer;transition:background .2s}
+.obtn:hover{background:rgba(125,224,214,.1)}
+.dbtn{padding:.48rem 1rem;border-radius:6px;font-size:12px;font-weight:600;background:transparent;color:#e05252;border:1px solid rgba(224,82,82,.28);cursor:pointer;transition:background .2s}
+.dbtn:hover{background:rgba(224,82,82,.08)}
+
+/* Projects admin */
+.adm-proj-card{border:1px solid rgba(125,224,214,.1);border-radius:10px;padding:1rem;margin-bottom:.75rem;background:rgba(255,255,255,.02);display:flex;gap:14px;align-items:flex-start}
+.adm-thumb{width:100px;height:68px;border-radius:7px;overflow:hidden;background:rgba(125,224,214,.07);border:1px dashed rgba(125,224,214,.25);flex-shrink:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+.adm-thumb img{width:100%;height:100%;object-fit:cover}
+.adm-thumb-ph{display:flex;flex-direction:column;align-items:center;gap:4px}
+.adm-thumb-ph svg{opacity:.4}
+.adm-thumb-ph span{font-family:monospace;font-size:9px;color:rgba(125,224,214,.4);letter-spacing:.05em}
+.adm-info{flex:1}
+.adm-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:.5rem}
+.ulbl{padding:.38rem .85rem;border-radius:5px;font-size:12px;font-weight:600;background:#1a7f74;color:#fff;cursor:pointer;display:inline-block;transition:background .2s}
+.ulbl:hover{background:#16a394}
+
+/* Section editor cards */
+.edit-block{border:1px solid rgba(125,224,214,.1);border-radius:10px;padding:1rem;margin-bottom:.75rem;background:rgba(255,255,255,.02)}
+.edit-block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.edit-block-title{font-size:13px;font-weight:600;color:#fff}
+.item-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:.5rem}
+.item-row .finp{margin-bottom:0;flex:1}
+
+/* Visitor stats */
+.vstat-g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.vstat{background:rgba(125,224,214,.05);border:1px solid rgba(125,224,214,.1);border-radius:8px;padding:.9rem;text-align:center}
+.vsn{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:#7de0d6}
+.vsl{font-size:10px;color:rgba(255,255,255,.35);font-family:monospace;text-transform:uppercase;letter-spacing:.08em}
+.vrow{display:flex;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
+
+/* Toast */
+#toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:#1a7f74;color:#fff;padding:.7rem 1.2rem;border-radius:8px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .3s;max-width:280px}
+#toast.show{opacity:1}
+
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;gap:2rem;min-height:auto;padding-top:5rem}
+  .stats-card{display:none}
+  .hl-inner{grid-template-columns:repeat(2,1fr)}
+  .exp-item{grid-template-columns:1fr;gap:.75rem}
+  .nav-links a:not(.admin-link){display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="haze"></div>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo" onclick="openAdmin()">SP <span>· PORTFOLIO</span></span>
+  <div class="nav-links">
+    <a href="#skills" class="nav-link">Skills</a>
+    <a href="#experience" class="nav-link">Experience</a>
+    <a href="#projects" class="nav-link">Projects</a>
+    <a href="#contact" class="nav-link">Contact</a>
+    <a id="nav-resume-btn" href="#" target="_blank" class="admin-btn" style="display:none;text-decoration:none">⬇ Resume</a>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-track">
+    <span>Power BI</span><span>●</span><span>PostgreSQL</span><span>●</span><span>Looker Studio</span><span>●</span><span>Tableau</span><span>●</span><span>Python · Pandas</span><span>●</span><span>DAX</span><span>●</span><span>Data Visualization</span><span>●</span><span>EDA</span><span>●</span><span>ETL Pipelines</span><span>●</span><span>SQL · MySQL</span><span>●</span>
+    <span>Power BI</span><span>●</span><span>PostgreSQL</span><span>●</span><span>Looker Studio</span><span>●</span><span>Tableau</span><span>●</span><span>Python · Pandas</span><span>●</span><span>DAX</span><span>●</span><span>Data Visualization</span><span>●</span><span>EDA</span><span>●</span><span>ETL Pipelines</span><span>●</span><span>SQL · MySQL</span><span>●</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="animation:fadeUp .8s ease both">
+    <p class="hero-eyebrow"><span class="eyebrow-line"></span><span id="hero-title-text">Data Analyst &amp; BI Developer</span></p>
+    <h1>Turning raw data into <em>clear decisions</em></h1>
+    <p class="hero-summary" id="hero-summary-text">I build SQL data models, automate reporting pipelines, and craft dashboards that make complex data readable at a glance — across Power BI, Tableau, and Looker Studio.</p>
+    <div class="cta-row">
+      <a id="resume-btn" href="#" target="_blank" class="btn-primary" style="display:none">⬇ Download Resume</a>
+    </div>
+  </div>
+</div>
+
+<!-- HIGHLIGHT BAR -->
+<div class="hl-bar">
+  <div class="hl-inner">
+    <div><div class="hl-num">5+</div><div class="hl-label">BI tools mastered</div></div>
+    <div><div class="hl-num">10</div><div class="hl-label">PostgreSQL validation queries</div></div>
+    <div><div class="hl-num">78.1%</div><div class="hl-label">Pipeline drop-off identified</div></div>
+    <div><div class="hl-num">90%</div><div class="hl-label">M.Sc. GPA</div></div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<div id="skills" class="section">
+  <div class="section-header">
+    <span class="section-tag">Expertise</span>
+    <h2 class="section-title">Technical Skills</h2>
+  </div>
+  <div class="skills-grid" id="skills-grid">
+    <div class="skill-card glass tilt"><div class="skill-icon-box">📊</div><div class="skill-title">Analytics &amp; BI</div><div class="tag-row"><span class="tag">Power BI</span><span class="tag">Tableau</span><span class="tag">Looker Studio</span><span class="tag">DAX</span><span class="tag">MS Excel</span></div></div>
+    <div class="skill-card glass tilt"><div class="skill-icon-box">🐍</div><div class="skill-title">Programming</div><div class="tag-row"><span class="tag">Python</span><span class="tag">Pandas</span><span class="tag">NumPy</span><span class="tag">Matplotlib</span><span class="tag">Scikit-learn</span></div></div>
+    <div class="skill-card glass tilt"><div class="skill-icon-box">🗄️</div><div class="skill-title">Databases</div><div class="tag-row"><span class="tag">SQL</span><span class="tag">PostgreSQL</span><span class="tag">MySQL</span></div></div>
+    <div class="skill-card glass tilt"><div class="skill-icon-box">⚙️</div><div class="skill-title">Data Engineering</div><div class="tag-row"><span class="tag">EDA</span><span class="tag">Data Cleaning</span><span class="tag">ETL Pipelines</span><span class="tag">Automation</span></div></div>
+    <div class="skill-card glass tilt"><div class="skill-icon-box">🤖</div><div class="skill-title">ML &amp; Frameworks</div><div class="tag-row"><span class="tag">TensorFlow</span><span class="tag">Keras</span><span class="tag">OpenCV</span><span class="tag">Django</span></div></div>
+    <div class="skill-card glass tilt"><div class="skill-icon-box">🛠️</div><div class="skill-title">Tools</div><div class="tag-row"><span class="tag">Git</span><span class="tag">Visual Studio</span><span class="tag">CSV/Excel</span></div></div>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<div id="experience" class="section" style="padding-top:0">
+  <div class="section-header">
+    <span class="section-tag">Career</span>
+    <h2 class="section-title">Experience</h2>
+  </div>
+  <div id="experience-list">
+    <div class="exp-item glass">
+      <div>
+        <div class="exp-date">MAY 2026</div>
+        <div class="exp-company">Excelerate (Remote)</div>
+        <span class="exp-badge">Internship</span>
+      </div>
+      <div>
+        <div class="exp-h3">Data Analyst Associate — Data Visualization</div>
+        <ul class="exp-ul">
+          <li class="exp-li">Cleaned and validated 6,893 records across 3 institutional datasets in PostgreSQL with zero KPI discrepancies, using a master compliance view built with LEFT JOINs.</li>
+          <li class="exp-li">Developed a 5-page Looker Studio compliance dashboard tracking I-20 issuance (34.7%), SEVIS fee payment (45.5%), deposit conversion (21.9%), and enrollment readiness (18.2%).</li>
+          <li class="exp-li">Identified a 78.1% pipeline drop-off at the deposit stage and flagged Nigeria (24.2%) and Ghana (24.8%) as high-priority I-20 compliance risk segments through EDA.</li>
+          <li class="exp-li">Authored 10 PostgreSQL validation queries to reconcile dashboard metrics against source data for accurate stakeholder reporting.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exp-item glass" style="margin-top:1.2rem">
+      <div>
+        <div class="exp-date">JAN 2025 – JUN 2026</div>
+        <div class="exp-company">Amazon MTurk (Remote)</div>
+        <span class="exp-badge">Contract</span>
+      </div>
+      <div>
+        <div class="exp-h3">Data Entry &amp; Quality Analyst</div>
+        <ul class="exp-ul">
+          <li class="exp-li">Managed data entry, medical billing processes, and record management with high accuracy and strict attention to detail.</li>
+          <li class="exp-li">Conducted survey data collection and verification, maintaining data quality and consistency across large datasets.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<div id="projects" class="section" style="padding-top:0">
+  <div class="section-header">
+    <span class="section-tag">Work</span>
+    <h2 class="section-title">Projects</h2>
+  </div>
+  <div class="projects-grid" id="projects-grid"></div>
+</div>
+
+<!-- CERTS -->
+<div class="section" style="padding-top:0">
+  <div class="section-header">
+    <span class="section-tag">Learning</span>
+    <h2 class="section-title">Certifications</h2>
+  </div>
+  <div class="cert-list" id="cert-list">
+    <div class="cert-item glass tilt"><div class="cert-icon">🏅</div><div><div class="cert-title">Data Visualization Associate — Excelerate Virtual Internship</div><div class="cert-sub">Jun 2026</div></div></div>
+    <div class="cert-item glass tilt"><div class="cert-icon">🏅</div><div><div class="cert-title">GenAI Powered Data Analytics Simulation — Tata / Forage</div><div class="cert-sub">Apr 2026</div></div></div>
+    <div class="cert-item glass tilt"><div class="cert-icon">🏅</div><div><div class="cert-title">Data Analytics Job Simulation — Deloitte / Forage</div><div class="cert-sub">Apr 2026</div></div></div>
+    <div class="cert-item glass tilt"><div class="cert-icon">📘</div><div><div class="cert-title">Python · RDBMS · Data Analytics</div><div class="cert-sub">Brainerry Spot · Ace Educate · Ascentz</div></div></div>
+  </div>
+</div>
+
+<!-- CUSTOM SECTIONS -->
+<div id="custom-sections-root"></div>
+
+<!-- CONTACT -->
+<div id="contact" class="contact-section">
+  <div class="contact-card glass">
+    <div class="contact-h2">Let's Connect</div>
+    <p class="contact-p">Open to data analyst, BI developer, and data visualization roles.</p>
+    <div class="contact-links">
+      <a id="contact-email" href="mailto:sathiyapriya7766@gmail.com" class="contact-link">✉ sathiyapriya7766@gmail.com</a>
+      <a id="contact-phone" href="tel:+919789771785" class="contact-link">📞 +91 97897 71785</a>
+      <a id="contact-linkedin" href="https://linkedin.com/in/Sathiyapriya-k-76" target="_blank" class="contact-link">🔗 LinkedIn</a>
+      <span id="contact-location" class="contact-link" style="cursor:default">📍 Erode, Tamil Nadu, India</span>
+    </div>
+    <div id="contact-resume-wrap" style="margin-top:1.25rem;display:none">
+      <a id="contact-resume-btn" href="#" class="btn-primary" style="margin:0 auto;text-decoration:none" download>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Resume
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 Sathiyapriya K · Built with passion for data</footer>
+
+</div><!-- .page -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ═══ ADMIN LOGIN ═══ -->
+<div class="overlay" id="ov-login">
+  <div class="lmodal">
+    <div style="font-size:32px;margin-bottom:10px">🔐</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:6px">Admin Access</div>
+    <p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:1.2rem">Enter password to continue</p>
+    <input type="password" id="pw-in" placeholder="Password" class="finp" onkeydown="if(event.key==='Enter')doLogin()">
+    <div id="pw-err" style="font-size:11px;color:#e05252;margin-bottom:8px;display:none">Wrong password</div>
+    <button class="sbtn" style="width:100%" onclick="doLogin()">Login</button>
+    <div style="margin-top:10px"><span style="font-size:11px;color:rgba(255,255,255,.25);cursor:pointer" onclick="closeOv('ov-login')">Cancel</span></div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN PANEL ═══ -->
+<div class="overlay" id="ov-admin">
+<div class="amodal">
+  <div class="am-hdr">
+    <div class="am-title">⚙ Portfolio Customizer</div>
+    <button class="am-close" onclick="closeOv('ov-admin')">✕</button>
+  </div>
+  <div class="atabs" id="atabs"></div>
+
+  <!-- TAB: Projects -->
+  <div class="apane act" id="tab-projects">
+    <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:1rem">Edit project details below and click <strong style="color:#7de0d6">Update Project</strong> to save each one.</p>
+    <div id="proj-admin-list"></div>
+    <button class="obtn" onclick="addProject()" style="margin-top:.5rem">+ Add new project</button>
+  </div>
+
+  <!-- TAB: Skills -->
+  <div class="apane" id="tab-skills">
+    <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:1rem">Edit skill categories below and click <strong style="color:#7de0d6">Update</strong> to save each one.</p>
+    <div id="skills-admin-list"></div>
+    <button class="obtn" onclick="addSkillCat()" style="margin-top:.5rem">+ Add skill category</button>
+  </div>
+
+  <!-- TAB: Experience -->
+  <div class="apane" id="tab-experience">
+    <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:1rem">Edit experience entries below and click <strong style="color:#7de0d6">Update</strong> to save each one.</p>
+    <div id="exp-admin-list"></div>
+    <button class="obtn" onclick="addExp()" style="margin-top:.5rem">+ Add experience</button>
+  </div>
+
+  <!-- TAB: Certifications -->
+  <div class="apane" id="tab-certs">
+    <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:1rem">Edit certifications below and click <strong style="color:#7de0d6">Update</strong> to save each one.</p>
+    <div id="certs-admin-list"></div>
+    <button class="obtn" onclick="addCert()" style="margin-top:.5rem">+ Add certification</button>
+  </div>
+
+  <!-- TAB: Content -->
+  <div class="apane" id="tab-content">
+    <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:1rem">Edit your name, headline, contact details, and resume. Click <strong style="color:#7de0d6">Update</strong> to save changes.</p>
+    <label class="flbl">Name</label><input class="finp" id="f-name">
+    <label class="flbl">Job Title</label><input class="finp" id="f-title">
+    <label class="flbl">Summary</label><textarea class="ftarea" id="f-summary" rows="3"></textarea>
+    <label class="flbl">Email</label><input class="finp" id="f-email">
+    <label class="flbl">Phone</label><input class="finp" id="f-phone">
+    <label class="flbl">LinkedIn URL</label><input class="finp" id="f-linkedin">
+    <label class="flbl">Location</label><input class="finp" id="f-location">
+    <div style="border:1px solid rgba(125,224,214,.18);border-radius:10px;padding:1rem;margin-bottom:14px;background:rgba(125,224,214,.04)">
+      <div style="font-size:12px;font-weight:600;color:#7de0d6;margin-bottom:.65rem">⬇ Resume File</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+        <label class="ulbl" style="font-size:12px">📄 Upload Resume (PDF/DOC)<input type="file" id="f-resumeFile" accept=".pdf,.doc,.docx" style="display:none" onchange="handleResumeUpload(this)"></label>
+        <span id="resume-filename" style="font-size:11px;color:rgba(125,224,214,.7);font-family:monospace"></span>
+        <button id="resume-remove-btn" class="dbtn" style="font-size:11px;display:none" onclick="removeResume()">Remove</button>
+      </div>
+      <label class="flbl">Or paste a URL (Google Drive / Dropbox / direct link)</label>
+      <input class="finp" id="f-resumeUrl" placeholder="https://drive.google.com/...">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.7)">
+          <input type="checkbox" id="f-resumeVisible" style="width:16px;height:16px;accent-color:#7de0d6;cursor:pointer">
+          Show Download Resume button on hero &amp; Let's Connect section
+        </label>
+      </div>
+      <div id="resume-preview" style="display:none;margin-top:4px">
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px">Preview:</div>
+        <a id="resume-preview-link" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:.55rem 1.1rem;border-radius:6px;font-size:13px;font-weight:600;background:#1a7f74;color:#fff;text-decoration:none">⬇ Download Resume</a>
+      </div>
+    </div>
+    <button class="sbtn" onclick="saveContent()" style="display:inline-flex;align-items:center;gap:6px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Update Content
+    </button>
+  </div>
+
+  <!-- TAB: Extra Sections -->
+  <div class="apane" id="tab-cats">
+    <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:1rem">Add custom sections like Testimonials, Publications, Awards, Hobbies, etc.</p>
+    <div id="cats-list"></div>
+    <button class="obtn" onclick="addCat()" style="margin-top:.5rem">+ Add new section</button>
+  </div>
+
+  <!-- TAB: Visitors -->
+  <div class="apane" id="tab-visitors">
+    <div class="vstat-g">
+      <div class="vstat"><div class="vsn" id="v-total">0</div><div class="vsl">Total Views</div></div>
+      <div class="vstat"><div class="vsn" id="v-today">0</div><div class="vsl">Today</div></div>
+      <div class="vstat"><div class="vsn" id="v-week">0</div><div class="vsl">This Week</div></div>
+    </div>
+    <div style="font-weight:600;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:.6rem">Recent visits</div>
+    <div id="v-log"></div>
+  </div>
+
+  <!-- TAB: Password -->
+  <div class="apane" id="tab-password">
+    <p style="font-size:12px;color:rgba(255,255,255,.35);margin-bottom:1rem">Change your admin password.</p>
+    <label class="flbl">Current Password</label><input type="password" class="finp" id="pw-cur">
+    <label class="flbl">New Password</label><input type="password" class="finp" id="pw-new">
+    <label class="flbl">Confirm New Password</label><input type="password" class="finp" id="pw-con">
+    <div id="pw-msg" style="font-size:12px;margin-bottom:8px;display:none"></div>
+    <button class="sbtn" onclick="changePassword()">Update Password</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ PROJECT IMAGE LIGHTBOX ═══ -->
+<div class="overlay" id="ov-projimg" style="z-index:300">
+  <div style="background:#0a1118;border:1px solid rgba(125,224,214,.22);border-radius:16px;width:min(96vw,860px);max-height:92vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.85rem 1.4rem;border-bottom:1px solid rgba(125,224,214,.12);flex-shrink:0">
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fff" id="projimg-title"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="gallery-counter" style="font-family:monospace;font-size:12px;color:rgba(255,255,255,.4)"></span>
+        <button class="am-close" onclick="closeOv('ov-projimg')">✕</button>
+      </div>
+    </div>
+    <div style="position:relative;overflow:auto;padding:1.2rem;display:flex;align-items:center;justify-content:center;flex:1;min-height:0">
+      <button id="gallery-prev" onclick="galleryNav(-1)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:10;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:background .2s" onmouseover="this.style.background='rgba(125,224,214,.25)'" onmouseout="this.style.background='rgba(0,0,0,.55)'">&#8249;</button>
+      <img id="projimg-el" src="" alt="Project Image" style="max-width:100%;max-height:72vh;border-radius:10px;object-fit:contain;display:block;user-select:none">
+      <button id="gallery-next" onclick="galleryNav(1)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:10;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:background .2s" onmouseover="this.style.background='rgba(125,224,214,.25)'" onmouseout="this.style.background='rgba(0,0,0,.55)'">&#8250;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  DATA DEFAULTS
+// ══════════════════════════════════════════════════
+const DEF_PASS = 'sp12';
+async function sha256(str){
+  if(window.crypto && window.crypto.subtle){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  // Fallback for non-secure contexts (plain http hosting) where SubtleCrypto is unavailable
+  let h1=0,h2=0;
+  for(let i=0;i<str.length;i++){ h1=(Math.imul(31,h1)+str.charCodeAt(i))|0; h2=(Math.imul(131,h2)+str.charCodeAt(i))|0; }
+  return 'fb'+(h1>>>0).toString(16)+(h2>>>0).toString(16);
+}
+let PASS_HASH = localStorage.getItem('sk_pass_hash');
+let authed = false;
+(async()=>{ if(!PASS_HASH){ const legacy = localStorage.getItem('sk_pass'); PASS_HASH = await sha256(legacy || DEF_PASS); localStorage.setItem('sk_pass_hash', PASS_HASH); if(legacy) localStorage.removeItem('sk_pass'); } })();
+
+const DEF_CONTENT = {
+  name:'Sathiyapriya K',title:'Data Analyst & BI Developer',
+  tagline:'Turning raw data into clear decisions',
+  summary:'I build SQL data models, automate reporting pipelines, and craft dashboards that make complex data readable at a glance — across Power BI, Tableau, and Looker Studio.',
+  email:'sathiyapriya7766@gmail.com',phone:'+91 97897 71785',
+  linkedin:'https://linkedin.com/in/Sathiyapriya-k-76',
+  location:'Erode, Tamil Nadu, India',resumeUrl:''
+};
+
+const DEF_PROJECTS = [
+  {id:1,title:'Automotive Fuel Trends & Emission Analysis',desc:'Processed 500,002 vehicle records, built Power BI dashboards with DAX to analyze BS IV–VI emission compliance and EV adoption by state.',stack:'Python,Power BI,DAX,Pandas',image:null,projectImage:null,images:[],link:''},
+  {id:2,title:'Retail Intelligence Dashboard',desc:'Tableau dashboard analyzing ₹2.23L revenue across 490 customers with segmentation and gender-based spending insights using LOD Expressions.',stack:'Tableau,LOD Expressions,Data Viz',image:null,projectImage:null,images:[],link:''},
+  {id:3,title:'Ground Water Quality Dashboard',desc:'8-chart Power BI dashboard analyzing groundwater quality across 10 US states (2012–2021), classifying 60.75% samples as drinkable using WHO thresholds.',stack:'Python,Power BI,Statistics',image:null,projectImage:null,images:[],link:''},
+  {id:4,title:'Ground Water Data Automation Pipeline',desc:'Automated ETL pipeline for merging, cleaning, and validating CSV datasets with auto-generated data quality reports and 5 engineered features.',stack:'Python,Pandas,ETL,Scikit-learn',image:null,projectImage:null,images:[],link:''},
+  {id:5,title:'AI Sign Language Detection System',desc:'Real-time CNN/SVM gesture recognition system for hearing-impaired users, deployed via Django with sub-second response time.',stack:'TensorFlow,Keras,OpenCV,Django',image:null,projectImage:null,images:[],link:''},
+  {id:6,title:'F-1 Compliance Dashboard',desc:'5-page Looker Studio compliance dashboard tracking 6,893 applicants across 3 PostgreSQL datasets — I-20 issuance, SEVIS, and enrollment readiness.',stack:'Looker Studio,PostgreSQL,SQL,EDA',image:null,projectImage:null,images:[],link:''},
+];
+
+const DEF_SKILLS = [
+  {id:1,icon:'📊',title:'Analytics & BI',tags:'Power BI,Tableau,Looker Studio,DAX,MS Excel'},
+  {id:2,icon:'🐍',title:'Programming',tags:'Python,Pandas,NumPy,Matplotlib,Scikit-learn'},
+  {id:3,icon:'🗄️',title:'Databases',tags:'SQL,PostgreSQL,MySQL'},
+  {id:4,icon:'⚙️',title:'Data Engineering',tags:'EDA,Data Cleaning,ETL Pipelines,Automation'},
+  {id:5,icon:'🤖',title:'ML & Frameworks',tags:'TensorFlow,Keras,OpenCV,Django'},
+  {id:6,icon:'🛠️',title:'Tools',tags:'Git,Visual Studio,CSV/Excel'},
+];
+
+const DEF_EXP = [
+  {id:1,date:'MAY 2026',company:'Excelerate (Remote)',badge:'Internship',role:'Data Analyst Associate — Data Visualization',bullets:'Cleaned and validated 6,893 records across 3 institutional datasets in PostgreSQL with zero KPI discrepancies, using a master compliance view built with LEFT JOINs.|Developed a 5-page Looker Studio compliance dashboard tracking I-20 issuance (34.7%), SEVIS fee payment (45.5%), deposit conversion (21.9%), and enrollment readiness (18.2%).|Identified a 78.1% pipeline drop-off at the deposit stage and flagged Nigeria (24.2%) and Ghana (24.8%) as high-priority segments.|Authored 10 PostgreSQL validation queries to reconcile dashboard metrics against source data.'},
+  {id:2,date:'JAN 2025 – JUN 2026',company:'Amazon MTurk (Remote)',badge:'Contract',role:'Data Entry & Quality Analyst',bullets:'Managed data entry, medical billing processes, and record management with high accuracy and strict attention to detail.|Conducted survey data collection and verification, maintaining data quality and consistency across large datasets.'},
+];
+
+const DEF_CERTS = [
+  {id:1,icon:'🏅',title:'Data Visualization Associate — Excelerate Virtual Internship',sub:'Jun 2026'},
+  {id:2,icon:'🏅',title:'GenAI Powered Data Analytics Simulation — Tata / Forage',sub:'Apr 2026'},
+  {id:3,icon:'🏅',title:'Data Analytics Job Simulation — Deloitte / Forage',sub:'Apr 2026'},
+  {id:4,icon:'📘',title:'Python · RDBMS · Data Analytics',sub:'Brainerry Spot · Ace Educate · Ascentz'},
+];
+
+const DEF_CATS = [];
+
+function load(k,def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch(e){ return def; } }
+function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ console.error('Storage save failed:',e); return false; } }
+
+// Resize + re-encode an image file before it's stored, so large photos
+// (which used to silently blow past the browser's ~5MB storage limit
+// and make uploads appear to "do nothing") stay small.
+function compressImage(file, maxDim, quality){
+  maxDim = maxDim || 1400; quality = quality || 0.75;
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = ()=> reject(new Error('Could not read that file.'));
+    reader.onload = ev=>{
+      const img = new Image();
+      img.onerror = ()=> reject(new Error('That file is not a readable image.'));
+      img.onload = ()=>{
+        let {width, height} = img;
+        if(width > maxDim || height > maxDim){
+          if(width > height){ height = Math.round(height * maxDim/width); width = maxDim; }
+          else { width = Math.round(width * maxDim/height); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+let content  = load('sk_content', DEF_CONTENT);
+let projects = load('sk_projects', DEF_PROJECTS);
+let skills   = load('sk_skills', DEF_SKILLS);
+let exp      = load('sk_exp', DEF_EXP);
+let certs    = load('sk_certs', DEF_CERTS);
+let cats     = load('sk_cats', DEF_CATS);
+let visitors = load('sk_visitors', []);
+
+// ══════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ══════════════════════════════════════════════════
+
+function applyContent(){
+  document.getElementById('hero-title-text').textContent  = content.title;
+  document.getElementById('hero-summary-text').textContent = content.summary;
+  document.getElementById('contact-email').textContent    = '✉ ' + content.email;
+  document.getElementById('contact-email').href           = 'mailto:' + content.email;
+  document.getElementById('contact-phone').textContent    = '📞 ' + content.phone;
+  document.getElementById('contact-phone').href           = 'tel:' + content.phone;
+  document.getElementById('contact-linkedin').href        = content.linkedin;
+  document.getElementById('contact-location').textContent = '📍 ' + content.location;
+  const rb  = document.getElementById('resume-btn');
+  const nrb = document.getElementById('nav-resume-btn');
+  const crw = document.getElementById('contact-resume-wrap');
+  const crb = document.getElementById('contact-resume-btn');
+  const resumeSrc = content.resumeData || content.resumeUrl || '';
+  const show = !!(resumeSrc && content.resumeVisible);
+  if(show){
+    rb.href=resumeSrc;  rb.style.display='inline-flex';
+    nrb.href=resumeSrc; nrb.style.display='inline-flex';
+    if(crb){ crb.href=resumeSrc; if(content.resumeData) crb.setAttribute('download',content.resumeFileName||'resume.pdf'); else crb.removeAttribute('download'); }
+    if(crw) crw.style.display='block';
+  } else {
+    rb.style.display='none'; nrb.style.display='none';
+    if(crw) crw.style.display='none';
+  }
+}
+
+function renderProjects(){
+  const grid = document.getElementById('projects-grid');
+  grid.innerHTML = projects.map((p,i)=>{
+    const imgs = (p.images && p.images.length) ? p.images : (p.projectImage ? [p.projectImage] : []);
+    return `<div class="project-card glass tilt">
+      <div class="proj-img-wrap">
+        ${p.image
+          ? `<img src="${p.image}" class="proj-img" alt="${p.title}">`
+          : `<div class="proj-placeholder"><div class="proj-placeholder-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7de0d6" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><span class="proj-placeholder-text">NO IMAGE \u00B7 UPLOAD IN ADMIN</span></div>`}
+      </div>
+      <div class="proj-body">
+        <div class="proj-top"><span class="proj-num">0${i+1}</span></div>
+        <div class="proj-title">${p.title}</div>
+        <p class="proj-desc">${p.desc}</p>
+        <div class="tag-row">${(p.stack||'').split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          ${imgs.length?`<button class="obtn" style="font-size:12px;display:inline-flex;align-items:center;gap:5px" onclick="viewGallery(${p.id})"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> Project Images${imgs.length>1?' ('+imgs.length+')':''}</button>`:''}
+          ${p.link?`<a href="${e(p.link)}" target="_blank" class="btn-outline" style="font-size:12px;padding:.38rem .9rem;text-decoration:none;display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Project Link</a>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  initTilt();
+}
+
+function renderSkills(){
+  const grid = document.getElementById('skills-grid');
+  grid.innerHTML = skills.map(s=>`
+    <div class="skill-card glass tilt">
+      <div class="skill-icon-box">${s.icon||'📊'}</div>
+      <div class="skill-title">${s.title}</div>
+      <div class="tag-row">${(s.tags||'').split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>
+    </div>`).join('');
+  initTilt();
+}
+
+function renderExp(){
+  const list = document.getElementById('experience-list');
+  list.innerHTML = exp.map((e,i)=>`
+    <div class="exp-item glass"${i>0?' style="margin-top:1.2rem"':''}>
+      <div>
+        <div class="exp-date">${e.date}</div>
+        <div class="exp-company">${e.company}</div>
+        <span class="exp-badge">${e.badge}</span>
+      </div>
+      <div>
+        <div class="exp-h3">${e.role}</div>
+        <ul class="exp-ul">
+          ${(e.bullets||'').split('|').filter(b=>b.trim()).map(b=>`<li class="exp-li">${b.trim()}</li>`).join('')}
+        </ul>
+      </div>
+    </div>`).join('');
+  initTilt();
+}
+
+function renderCerts(){
+  const list = document.getElementById('cert-list');
+  list.innerHTML = certs.map(c=>`
+    <div class="cert-item glass tilt">
+      <div class="cert-icon">${c.icon||'🏅'}</div>
+      <div><div class="cert-title">${c.title}</div><div class="cert-sub">${c.sub}</div></div>
+    </div>`).join('');
+  initTilt();
+}
+
+function renderCustomSections(){
+  const root = document.getElementById('custom-sections-root');
+  root.innerHTML = cats.map(cat=>`
+    <div class="section" style="padding-top:0">
+      <div class="section-header">
+        <span class="section-tag">Custom</span>
+        <h2 class="section-title">${cat.name}</h2>
+      </div>
+      ${(cat.items||[]).map(it=>`
+        <div class="glass" style="padding:1rem 1.25rem;margin-bottom:.75rem">
+          <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px">${it.title||''}</div>
+          <div style="font-size:13px;color:#b7c1d1">${it.desc||''}</div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function renderAll(){
+  applyContent();
+  renderProjects();
+  renderSkills();
+  renderExp();
+  renderCerts();
+  renderCustomSections();
+}
+
+// ══════════════════════════════════════════════════
+//  TILT
+// ══════════════════════════════════════════════════
+function initTilt(){
+  document.querySelectorAll('.tilt').forEach(card=>{
+    if(card.dataset.tiltBound) return;
+    card.dataset.tiltBound='1';
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width-.5;
+      const py=(e.clientY-r.top)/r.height-.5;
+      card.style.transform=`perspective(800px) rotateX(${(-py*6).toFixed(2)}deg) rotateY(${(px*6).toFixed(2)}deg) translateY(-2px)`;
+    });
+    card.addEventListener('mouseleave',()=>{ card.style.transform=''; });
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  SCROLL REVEAL
+// ══════════════════════════════════════════════════
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.style.animation='fadeUp .6s ease both'; e.target.style.opacity='1'; }
+  });
+},{threshold:.12});
+document.querySelectorAll('.skill-card,.exp-item,.project-card,.cert-item').forEach(el=>{
+  el.style.opacity='0';
+  io.observe(el);
+});
+
+// ══════════════════════════════════════════════════
+//  NAV ACTIVE LINK
+// ══════════════════════════════════════════════════
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = ['skills','experience','projects','contact'];
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && window.scrollY >= el.offsetTop-120) cur=id;
+  });
+  navLinks.forEach(a=>a.classList.toggle('act', a.getAttribute('href')==='#'+cur));
+},{passive:true});
+
+// ══════════════════════════════════════════════════
+//  ADMIN TABS CONFIG
+// ══════════════════════════════════════════════════
+const ADMIN_TABS=[
+  {id:'projects',label:'Projects'},
+  {id:'skills',label:'Skills'},
+  {id:'experience',label:'Experience'},
+  {id:'certs',label:'Certifications'},
+  {id:'content',label:'Content'},
+  {id:'cats',label:'+ Sections'},
+  {id:'visitors',label:'Visitors'},
+  {id:'password',label:'Password'},
+];
+
+function buildAdminTabs(){
+  const tc=document.getElementById('atabs');
+  tc.innerHTML='';
+  ADMIN_TABS.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='atab'+(i===0?' act':'');
+    b.textContent=t.label;
+    b.onclick=()=>switchTab(t.id,b);
+    tc.appendChild(b);
+  });
+}
+
+function switchTab(id,btn){
+  document.querySelectorAll('.apane').forEach(p=>p.classList.remove('act'));
+  document.querySelectorAll('.atab').forEach(b=>b.classList.remove('act'));
+  document.getElementById('tab-'+id).classList.add('act');
+  btn.classList.add('act');
+  if(id==='visitors')    renderVisitors();
+  if(id==='projects')    renderProjAdmin();
+  if(id==='skills')      renderSkillsAdmin();
+  if(id==='experience')  renderExpAdmin();
+  if(id==='certs')       renderCertsAdmin();
+  if(id==='cats')        renderCatsAdmin();
+  if(id==='content')     fillContentForm();
+}
+
+// ══════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════
+function openAdmin(){
+  if(authed){ openPanel(); return; }
+  document.getElementById('ov-login').classList.add('open');
+  setTimeout(()=>document.getElementById('pw-in').focus(),100);
+}
+function closeOv(id){ document.getElementById(id).classList.remove('open'); }
+async function doLogin(){
+  const v=document.getElementById('pw-in').value;
+  const hash=await sha256(v);
+  if(hash===PASS_HASH){ authed=true; closeOv('ov-login'); document.getElementById('pw-in').value=''; openPanel(); }
+  else{ document.getElementById('pw-err').style.display='block'; document.getElementById('pw-in').value=''; }
+}
+function openPanel(){
+  buildAdminTabs(); renderProjAdmin(); fillContentForm(); renderCatsAdmin();
+  document.getElementById('ov-admin').classList.add('open');
+}
+
+// ══════════════════════════════════════════════════
+//  PROJECTS ADMIN
+// ══════════════════════════════════════════════════
+function renderProjAdmin(){
+  const el=document.getElementById('proj-admin-list');
+  el.innerHTML=projects.map((p,i)=>{
+    const imgs=p.images||[];
+    const imgPreviews=imgs.length?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0">${imgs.map((src,idx)=>`<div style="position:relative;width:72px;height:52px;border-radius:6px;overflow:hidden;border:1px solid rgba(125,224,214,.25)"><img src="${src}" style="width:100%;height:100%;object-fit:cover"><button onclick="removeProjImg(${p.id},${idx})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.75);border:none;color:#fff;border-radius:3px;cursor:pointer;font-size:10px;padding:1px 4px;line-height:1">x</button></div>`).join('')}</div>`:'';
+    return `<div class="adm-proj-card">
+    <div class="adm-thumb" id="ath-${p.id}">
+      ${p.image?`<img src="${p.image}">`:`<div class="adm-thumb-ph"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7de0d6" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>NO IMAGE</span></div>`}
+    </div>
+    <div class="adm-info">
+      <div class="adm-name">0${i+1} · ${p.title}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+        <label class="ulbl">🖼 ${p.image?'Replace':'Upload'} Thumbnail<input type="file" accept="image/*" style="display:none" onchange="handleImg(${p.id},this)"></label>
+        ${p.image?`<button class="obtn" onclick="removeImg(${p.id})">Remove Thumb</button>`:''}
+        <button class="dbtn" onclick="deleteProject(${p.id})">Delete Project</button>
+      </div>
+      <div style="border:1px solid rgba(125,224,214,.14);border-radius:8px;padding:8px;margin-bottom:8px;background:rgba(125,224,214,.03)">
+        <div style="font-size:10px;font-weight:600;color:#7de0d6;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">📸 Project Images (up to 10) &mdash; shown in gallery on portfolio</div>
+        ${imgPreviews}
+        ${imgs.length>=10?`<div style="font-size:11px;color:#e05252;margin-top:4px">Max 10 images reached. Remove some to add more.</div>`:`<label class="ulbl" style="background:#16637a;font-size:11px">${imgs.length?'+ Add More Images':'Upload Project Images'}<input type="file" accept="image/*" multiple style="display:none" onchange="handleMultiImg(${p.id},this)"></label>`}
+        ${imgs.length?`<button class="obtn" style="font-size:11px;margin-left:4px" onclick="viewGallery(${p.id})">👁 Preview Gallery</button>`:''}
+      </div>
+      <input class="finp" id="pt-${p.id}" style="margin-bottom:5px;font-size:12px" value="${e(p.title)}" placeholder="Project title">
+      <textarea class="ftarea" id="pd-${p.id}" style="font-size:12px;min-height:50px" placeholder="Description">${e(p.desc)}</textarea>
+      <input class="finp" id="ps-${p.id}" style="font-size:12px;margin-bottom:5px" value="${e(p.stack||'')}" placeholder="Tech stack (comma separated)">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <input class="finp" id="pl-${p.id}" style="font-size:12px;margin-bottom:0;flex:1" value="${e(p.link||'')}" placeholder="🔗 Project link (GitHub / Live URL)">
+        ${p.link?`<a href="${e(p.link)}" target="_blank" class="obtn" style="white-space:nowrap;text-decoration:none;flex-shrink:0">↗ Open</a>`:''}
+      </div>
+      <button class="sbtn" style="font-size:12px;display:inline-flex;align-items:center;gap:5px" onclick="saveProj(${p.id})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Update Project
+      </button>
+    </div>
+  </div>`;
+  }).join('');
+}
+
+function handleImg(id,inp){
+  const f=inp.files[0]; if(!f)return;
+  if(!f.type.startsWith('image/')){ toast('Please choose an image file.'); inp.value=''; return; }
+  toast('Uploading…');
+  compressImage(f).then(dataUrl=>{
+    projects=projects.map(p=>p.id===id?{...p,image:dataUrl}:p);
+    const ok=save('sk_projects',projects);
+    if(ok){ renderProjAdmin(); renderProjects(); toast('Thumbnail uploaded!'); }
+    else{ toast('⚠ Storage full — remove a project image or two, then try again.'); }
+  }).catch(err=>{ toast('Upload failed: '+err.message); });
+  inp.value='';
+}
+function handleMultiImg(id,inp){
+  const files=Array.from(inp.files); if(!files.length)return;
+  const proj=projects.find(p=>p.id===id); if(!proj)return;
+  const existing=(proj.images||[]).length;
+  const allowed=Math.min(files.length, 10-existing);
+  if(allowed<=0){toast('Max 10 images reached!'); inp.value=''; return;}
+  const toProcess=files.slice(0,allowed).filter(f=>f.type.startsWith('image/'));
+  if(!toProcess.length){ toast('Please choose image files.'); inp.value=''; return; }
+  toast('Uploading…');
+  Promise.all(toProcess.map(f=>compressImage(f)))
+    .then(newImgs=>{
+      const before=projects;
+      projects=projects.map(p=>p.id===id?{...p,images:[...(p.images||[]),...newImgs]}:p);
+      const ok=save('sk_projects',projects);
+      if(ok){ renderProjAdmin(); renderProjects(); toast(newImgs.length+' image'+(newImgs.length>1?'s':'')+' added!'); }
+      else{ projects=before; toast('⚠ Storage full — remove a few images, then try again.'); }
+    })
+    .catch(err=>{ toast('Upload failed: '+err.message); });
+  inp.value='';
+}
+function removeProjImg(id,idx){
+  projects=projects.map(p=>p.id===id?{...p,images:(p.images||[]).filter((_,i)=>i!==idx)}:p);
+  save('sk_projects',projects); renderProjAdmin(); renderProjects(); toast('Image removed.');
+}
+let galleryState={id:null,idx:0};
+function viewGallery(id){
+  const p=projects.find(x=>x.id===id); if(!p)return;
+  const imgs=(p.images&&p.images.length)?p.images:(p.projectImage?[p.projectImage]:[]);
+  if(!imgs.length)return;
+  galleryState={id,idx:0};
+  const ov=document.getElementById('ov-projimg');
+  document.getElementById('projimg-title').textContent=p.title;
+  updateGalleryView(imgs);
+  ov.classList.add('open');
+}
+function updateGalleryView(imgs){
+  const idx=galleryState.idx;
+  const el=document.getElementById('projimg-el'); if(el) el.src=imgs[idx];
+  const counter=document.getElementById('gallery-counter');
+  if(counter) counter.textContent=imgs.length>1?(idx+1)+' / '+imgs.length:'';
+  const prev=document.getElementById('gallery-prev');
+  const next=document.getElementById('gallery-next');
+  if(prev) prev.style.display=imgs.length>1?'flex':'none';
+  if(next) next.style.display=imgs.length>1?'flex':'none';
+  if(prev) prev.style.opacity=idx===0?'0.3':'1';
+  if(next) next.style.opacity=idx===imgs.length-1?'0.3':'1';
+}
+function galleryNav(dir){
+  const p=projects.find(x=>x.id===galleryState.id); if(!p)return;
+  const imgs=(p.images&&p.images.length)?p.images:(p.projectImage?[p.projectImage]:[]);
+  galleryState.idx=Math.max(0,Math.min(imgs.length-1,galleryState.idx+dir));
+  updateGalleryView(imgs);
+}
+function removeImg(id){ projects=projects.map(p=>p.id===id?{...p,image:null}:p); save('sk_projects',projects); renderProjAdmin(); renderProjects(); }
+function updateProj(id,key,val){ projects=projects.map(p=>p.id===id?{...p,[key]:val}:p); save('sk_projects',projects); }
+function saveProj(id){
+  const title=(document.getElementById('pt-'+id)||{}).value;
+  const desc=(document.getElementById('pd-'+id)||{}).value;
+  const stack=(document.getElementById('ps-'+id)||{}).value;
+  const link=(document.getElementById('pl-'+id)||{}).value;
+  projects=projects.map(p=>p.id===id?{...p,title:title||p.title,desc:desc||p.desc,stack:stack!==undefined?stack:p.stack,link:link!==undefined?link:p.link}:p);
+  save('sk_projects',projects); renderProjects(); toast('✓ Project updated!');
+}
+function deleteProject(id){ if(!confirm('Delete this project?'))return; projects=projects.filter(p=>p.id!==id); save('sk_projects',projects); renderProjAdmin(); renderProjects(); }
+function addProject(){
+  const newp={id:Date.now(),title:'New Project',desc:'Description here',stack:'',image:null,projectImage:null,images:[],link:''};
+  projects.push(newp); save('sk_projects',projects); renderProjAdmin(); renderProjects(); toast('Project added!');
+}
+
+// ══════════════════════════════════════════════════
+//  SKILLS ADMIN
+// ══════════════════════════════════════════════════
+function renderSkillsAdmin(){
+  const el=document.getElementById('skills-admin-list');
+  el.innerHTML=skills.map(s=>`
+  <div class="edit-block">
+    <div class="edit-block-head">
+      <div class="edit-block-title">${s.title}</div>
+      <button class="dbtn" onclick="deleteSkillCat(${s.id})">Delete</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input class="finp" id="si-${s.id}" style="width:70px;margin-bottom:0" value="${e(s.icon||'')}" placeholder="Icon">
+      <input class="finp" id="st-${s.id}" style="flex:1;margin-bottom:0" value="${e(s.title)}" placeholder="Category name">
+    </div>
+    <label class="flbl" style="margin-top:6px">Tags (comma separated)</label>
+    <input class="finp" id="sg-${s.id}" value="${e(s.tags||'')}" placeholder="e.g. Python, Pandas, NumPy">
+    <button class="sbtn" style="font-size:12px;margin-top:4px;display:inline-flex;align-items:center;gap:5px" onclick="saveSkill(${s.id})">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Update
+    </button>
+  </div>`).join('');
+}
+function updateSkill(id,key,val){ skills=skills.map(s=>s.id===id?{...s,[key]:val}:s); save('sk_skills',skills); renderSkills(); }
+function saveSkill(id){
+  const icon=(document.getElementById('si-'+id)||{}).value;
+  const title=(document.getElementById('st-'+id)||{}).value;
+  const tags=(document.getElementById('sg-'+id)||{}).value;
+  skills=skills.map(s=>s.id===id?{...s,icon:icon||s.icon,title:title||s.title,tags:tags!==undefined?tags:s.tags}:s);
+  save('sk_skills',skills); renderSkills(); toast('✓ Skill updated!');
+}
+function deleteSkillCat(id){ if(!confirm('Delete skill category?'))return; skills=skills.filter(s=>s.id!==id); save('sk_skills',skills); renderSkillsAdmin(); renderSkills(); }
+function addSkillCat(){
+  const ns={id:Date.now(),icon:'⭐',title:'New Category',tags:''};
+  skills.push(ns); save('sk_skills',skills); renderSkillsAdmin(); renderSkills(); toast('Skill category added!');
+}
+
+// ══════════════════════════════════════════════════
+//  EXPERIENCE ADMIN
+// ══════════════════════════════════════════════════
+function renderExpAdmin(){
+  const el=document.getElementById('exp-admin-list');
+  el.innerHTML=exp.map(ex=>`
+  <div class="edit-block">
+    <div class="edit-block-head">
+      <div class="edit-block-title">${ex.role}</div>
+      <button class="dbtn" onclick="deleteExp(${ex.id})">Delete</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1"><label class="flbl">Date / Period</label><input class="finp" id="ed-${ex.id}" value="${e(ex.date)}" placeholder="e.g. MAY 2026"></div>
+      <div style="flex:1"><label class="flbl">Badge</label><input class="finp" id="eb-${ex.id}" value="${e(ex.badge)}" placeholder="Internship / Full-time"></div>
+    </div>
+    <label class="flbl">Company</label><input class="finp" id="ec-${ex.id}" value="${e(ex.company)}" placeholder="Company name">
+    <label class="flbl">Job Title / Role</label><input class="finp" id="er-${ex.id}" value="${e(ex.role)}" placeholder="Your role">
+    <label class="flbl">Bullet points (separate with | pipe character)</label>
+    <textarea class="ftarea" id="eu-${ex.id}" rows="4" placeholder="Achievement 1|Achievement 2|Achievement 3">${e(ex.bullets||'')}</textarea>
+    <button class="sbtn" style="font-size:12px;margin-top:4px;display:inline-flex;align-items:center;gap:5px" onclick="saveExp(${ex.id})">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Update
+    </button>
+  </div>`).join('');
+}
+function updateExp(id,key,val){ exp=exp.map(ex=>ex.id===id?{...ex,[key]:val}:ex); save('sk_exp',exp); renderExp(); }
+function saveExp(id){
+  const date=(document.getElementById('ed-'+id)||{}).value;
+  const badge=(document.getElementById('eb-'+id)||{}).value;
+  const company=(document.getElementById('ec-'+id)||{}).value;
+  const role=(document.getElementById('er-'+id)||{}).value;
+  const bullets=(document.getElementById('eu-'+id)||{}).value;
+  exp=exp.map(ex=>ex.id===id?{...ex,date:date||ex.date,badge:badge||ex.badge,company:company||ex.company,role:role||ex.role,bullets:bullets!==undefined?bullets:ex.bullets}:ex);
+  save('sk_exp',exp); renderExp(); renderExpAdmin(); toast('✓ Experience updated!');
+}
+function deleteExp(id){ if(!confirm('Delete this experience?'))return; exp=exp.filter(ex=>ex.id!==id); save('sk_exp',exp); renderExpAdmin(); renderExp(); }
+function addExp(){
+  const ne={id:Date.now(),date:'',company:'',badge:'',role:'New Role',bullets:''};
+  exp.push(ne); save('sk_exp',exp); renderExpAdmin(); renderExp(); toast('Experience added!');
+}
+
+// ══════════════════════════════════════════════════
+//  CERTS ADMIN
+// ══════════════════════════════════════════════════
+function renderCertsAdmin(){
+  const el=document.getElementById('certs-admin-list');
+  el.innerHTML=certs.map(c=>`
+  <div class="edit-block">
+    <div class="edit-block-head">
+      <div class="edit-block-title">${c.title}</div>
+      <button class="dbtn" onclick="deleteCertEntry(${c.id})">Delete</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input class="finp" id="ci-${c.id}" style="width:70px;margin-bottom:0" value="${e(c.icon||'🏅')}" placeholder="Icon">
+      <input class="finp" id="ct-${c.id}" style="flex:1;margin-bottom:0;margin-left:0" value="${e(c.title)}" placeholder="Certification title">
+    </div>
+    <input class="finp" id="cs-${c.id}" style="margin-top:6px" value="${e(c.sub||'')}" placeholder="Issuer / Date">
+    <button class="sbtn" style="font-size:12px;margin-top:4px;display:inline-flex;align-items:center;gap:5px" onclick="saveCert(${c.id})">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Update
+    </button>
+  </div>`).join('');
+}
+function updateCertEntry(id,key,val){ certs=certs.map(c=>c.id===id?{...c,[key]:val}:c); save('sk_certs',certs); renderCerts(); }
+function saveCert(id){
+  const icon=(document.getElementById('ci-'+id)||{}).value;
+  const title=(document.getElementById('ct-'+id)||{}).value;
+  const sub=(document.getElementById('cs-'+id)||{}).value;
+  certs=certs.map(c=>c.id===id?{...c,icon:icon||c.icon,title:title||c.title,sub:sub!==undefined?sub:c.sub}:c);
+  save('sk_certs',certs); renderCerts(); toast('✓ Certification updated!');
+}
+function deleteCertEntry(id){ if(!confirm('Delete certification?'))return; certs=certs.filter(c=>c.id!==id); save('sk_certs',certs); renderCertsAdmin(); renderCerts(); }
+function addCert(){
+  const nc={id:Date.now(),icon:'🏅',title:'New Certification',sub:''};
+  certs.push(nc); save('sk_certs',certs); renderCertsAdmin(); renderCerts(); toast('Certification added!');
+}
+
+// ══════════════════════════════════════════════════
+//  CONTENT ADMIN
+// ══════════════════════════════════════════════════
+function fillContentForm(){
+  ['name','title','tagline','summary','email','phone','linkedin','location','resumeUrl'].forEach(k=>{
+    const el=document.getElementById('f-'+k); if(el) el.value=content[k]||'';
+  });
+  const cb=document.getElementById('f-resumeVisible');
+  if(cb) cb.checked = !!content.resumeVisible;
+  // Show existing resume filename if uploaded
+  const fn=document.getElementById('resume-filename');
+  const rb=document.getElementById('resume-remove-btn');
+  if(content.resumeData && content.resumeFileName){
+    if(fn) fn.textContent='📄 '+content.resumeFileName;
+    if(rb) rb.style.display='inline-block';
+  } else {
+    if(fn) fn.textContent='';
+    if(rb) rb.style.display='none';
+  }
+  updateResumePreview();
+  const urlEl=document.getElementById('f-resumeUrl');
+  if(urlEl) urlEl.addEventListener('input',updateResumePreview);
+  if(cb) cb.addEventListener('change',updateResumePreview);
+}
+function handleResumeUpload(inp){
+  const f=inp.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    content.resumeData=ev.target.result;
+    content.resumeFileName=f.name;
+    save('sk_content',content);
+    const fn=document.getElementById('resume-filename');
+    const rb=document.getElementById('resume-remove-btn');
+    if(fn) fn.textContent='📄 '+f.name;
+    if(rb) rb.style.display='inline-block';
+    updateResumePreview();
+    toast('✓ Resume uploaded — click Update Content to apply!');
+  };
+  r.readAsDataURL(f);
+}
+function removeResume(){
+  content.resumeData=null; content.resumeFileName='';
+  save('sk_content',content);
+  const fn=document.getElementById('resume-filename');
+  const rb=document.getElementById('resume-remove-btn');
+  const fi=document.getElementById('f-resumeFile');
+  if(fn) fn.textContent=''; if(rb) rb.style.display='none'; if(fi) fi.value='';
+  updateResumePreview(); applyContent(); toast('Resume removed.');
+}
+
+function updateResumePreview(){
+  const url=(document.getElementById('f-resumeUrl')||{}).value||'';
+  const visible=(document.getElementById('f-resumeVisible')||{}).checked;
+  const preview=document.getElementById('resume-preview');
+  const link=document.getElementById('resume-preview-link');
+  const src=content.resumeData||url;
+  if(preview) preview.style.display=(visible&&src)?'block':'none';
+  if(link&&src){ link.href=src; if(content.resumeData) link.setAttribute('download',content.resumeFileName||'resume.pdf'); else link.removeAttribute('download'); }
+}
+function saveContent(){
+  ['name','title','tagline','summary','email','phone','linkedin','location','resumeUrl'].forEach(k=>{
+    const el=document.getElementById('f-'+k); if(el) content[k]=el.value;
+  });
+  const cb=document.getElementById('f-resumeVisible');
+  content.resumeVisible = cb ? cb.checked : false;
+  // If a URL is entered, clear any uploaded file (URL takes precedence when both present)
+  if(content.resumeUrl && !content.resumeData){
+    content.resumeData=null; content.resumeFileName='';
+  }
+  save('sk_content',content); applyContent(); toast('✓ Content updated!');
+}
+
+// ══════════════════════════════════════════════════
+//  EXTRA SECTIONS (CATS)
+// ══════════════════════════════════════════════════
+function renderCatsAdmin(){
+  const el=document.getElementById('cats-list');
+  el.innerHTML=cats.map(c=>`
+  <div class="edit-block">
+    <div class="edit-block-head">
+      <div class="edit-block-title">${c.name}</div>
+      <button class="dbtn" onclick="deleteCat(${c.id})">Delete section</button>
+    </div>
+    <input class="finp" value="${e(c.name)}" onchange="updateCat(${c.id},'name',this.value)" placeholder="Section name">
+    <div id="cat-items-${c.id}">${renderCatItems(c)}</div>
+    <button class="obtn" style="font-size:11px;margin-top:4px" onclick="addCatItem(${c.id})">+ Add item</button>
+  </div>`).join('');
+}
+function renderCatItems(c){
+  return (c.items||[]).map((it,i)=>`
+  <div class="item-row" style="margin-bottom:6px">
+    <input class="finp" value="${e(it.title||'')}" placeholder="Title" onchange="updateCatItem(${c.id},${i},'title',this.value)">
+    <input class="finp" value="${e(it.desc||'')}" placeholder="Description" onchange="updateCatItem(${c.id},${i},'desc',this.value)">
+    <button class="dbtn" style="padding:.38rem .6rem;font-size:11px;margin-bottom:10px;flex-shrink:0" onclick="deleteCatItem(${c.id},${i})">✕</button>
+  </div>`).join('');
+}
+function addCat(){ const c={id:Date.now(),name:'New Section',items:[]}; cats.push(c); save('sk_cats',cats); renderCatsAdmin(); renderCustomSections(); toast('Section added!'); }
+function deleteCat(id){ if(!confirm('Delete section?'))return; cats=cats.filter(c=>c.id!==id); save('sk_cats',cats); renderCatsAdmin(); renderCustomSections(); }
+function updateCat(id,key,val){ cats=cats.map(c=>c.id===id?{...c,[key]:val}:c); save('sk_cats',cats); renderCustomSections(); }
+function addCatItem(cid){ cats=cats.map(c=>c.id===cid?{...c,items:[...(c.items||[]),{title:'',desc:''}]}:c); save('sk_cats',cats); renderCatsAdmin(); }
+function deleteCatItem(cid,idx){ cats=cats.map(c=>c.id===cid?{...c,items:(c.items||[]).filter((_,i)=>i!==idx)}:c); save('sk_cats',cats); renderCatsAdmin(); renderCustomSections(); }
+function updateCatItem(cid,idx,key,val){ cats=cats.map(c=>c.id===cid?{...c,items:(c.items||[]).map((it,i)=>i===idx?{...it,[key]:val}:it)}:c); save('sk_cats',cats); }
+
+// ══════════════════════════════════════════════════
+//  VISITORS
+// ══════════════════════════════════════════════════
+function renderVisitors(){
+  const today=new Date().toDateString();
+  document.getElementById('v-total').textContent=visitors.length;
+  document.getElementById('v-today').textContent=visitors.filter(v=>new Date(v.time).toDateString()===today).length;
+  document.getElementById('v-week').textContent=visitors.filter(v=>Date.now()-new Date(v.time)<7*864e5).length;
+  const log=document.getElementById('v-log');
+  if(!visitors.length){log.innerHTML='<div style="font-size:12px;color:rgba(255,255,255,.3)">No visits yet.</div>';return;}
+  log.innerHTML=visitors.slice().reverse().slice(0,20).map(v=>`
+  <div class="vrow"><span style="color:rgba(255,255,255,.65)">${v.page||'Portfolio'}</span><span style="color:rgba(255,255,255,.3);font-family:monospace;font-size:11px">${new Date(v.time).toLocaleString()}</span></div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  PASSWORD
+// ══════════════════════════════════════════════════
+async function changePassword(){
+  const cur=document.getElementById('pw-cur').value;
+  const nw=document.getElementById('pw-new').value;
+  const co=document.getElementById('pw-con').value;
+  const msg=document.getElementById('pw-msg');
+  const curHash=await sha256(cur);
+  if(curHash!==PASS_HASH){msg.style.display='block';msg.style.color='#e05252';msg.textContent='Current password is wrong.';return;}
+  if(nw.length<3){msg.style.display='block';msg.style.color='#e05252';msg.textContent='New password too short.';return;}
+  if(nw!==co){msg.style.display='block';msg.style.color='#e05252';msg.textContent="Passwords don't match.";return;}
+  PASS_HASH=await sha256(nw); localStorage.setItem('sk_pass_hash',PASS_HASH);
+  msg.style.display='block';msg.style.color='#7de0d6';msg.textContent='Password updated!';
+  document.getElementById('pw-cur').value='';document.getElementById('pw-new').value='';document.getElementById('pw-con').value='';
+}
+
+// ══════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════
+function e(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function recordVisit(){
+  visitors.push({time:new Date().toISOString(),page:'Portfolio'});
+  save('sk_visitors',visitors);
+}
+
+['ov-login','ov-admin','ov-projimg'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{ if(e.target===e.currentTarget) closeOv(id); });
+});
+// Gallery keyboard nav
+document.addEventListener('keydown',e=>{
+  const ov=document.getElementById('ov-projimg');
+  if(!ov.classList.contains('open'))return;
+  if(e.key==='ArrowLeft')galleryNav(-1);
+  if(e.key==='ArrowRight')galleryNav(1);
+  if(e.key==='Escape')closeOv('ov-projimg');
+});
+
+// ══════════════════════════════════════════════════
+//  THREE.JS — 3D FLIGHT BACKGROUND
+// ══════════════════════════════════════════════════
+(function(){
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(65,window.innerWidth/window.innerHeight,0.1,600);
+  camera.position.set(0,0,8);
+
+  scene.add(new THREE.AmbientLight(0x223344,1.4));
+  const pl = new THREE.PointLight(0x7de0d6,2.5,150);
+  pl.position.set(0,0,10);
+  scene.add(pl);
+
+  // Starfield
+  const starGeo = new THREE.BufferGeometry();
+  const STAR_COUNT = 1600;
+  const starPos = new Float32Array(STAR_COUNT*3);
+  for(let i=0;i<STAR_COUNT;i++){
+    starPos[i*3]   = (Math.random()-.5)*140;
+    starPos[i*3+1] = (Math.random()-.5)*140;
+    starPos[i*3+2] = -Math.random()*280;
+  }
+  starGeo.setAttribute('position',new THREE.BufferAttribute(starPos,3));
+  const starMat = new THREE.PointsMaterial({color:0x9fd9ff,size:0.55,transparent:true,opacity:0.65});
+  const stars = new THREE.Points(starGeo,starMat);
+  scene.add(stars);
+
+  // Geometric shapes along z-axis — one per section
+  const SECTION_Z = [-2,-30,-58,-86,-114,-142,-170,-198];
+  const shapeDefs = [
+    ()=>new THREE.IcosahedronGeometry(2.1,0),
+    ()=>new THREE.TorusKnotGeometry(1.6,0.45,100,16),
+    ()=>new THREE.OctahedronGeometry(2.0,0),
+    ()=>new THREE.DodecahedronGeometry(2.0,0),
+    ()=>new THREE.TorusGeometry(1.8,0.5,16,60),
+    ()=>new THREE.IcosahedronGeometry(2.3,1),
+    ()=>new THREE.OctahedronGeometry(1.9,0),
+    ()=>new THREE.TorusKnotGeometry(1.4,0.4,80,14),
+  ];
+  const colors = [0x1a7f74,0x7de0d6,0x4fa8ff,0x9b7dff,0x7de0d6,0x1a7f74,0x4fa8ff,0x9b7dff];
+
+  const meshObjs = [];
+  SECTION_Z.forEach((z,i)=>{
+    const geo = shapeDefs[i]();
+    const mat = new THREE.MeshStandardMaterial({
+      color:colors[i],emissive:colors[i],emissiveIntensity:0.32,
+      roughness:0.25,metalness:0.65,transparent:true,opacity:0.82
+    });
+    const mesh = new THREE.Mesh(geo,mat);
+    const side = (i%2===0)?1:-1;
+    mesh.position.set(side*5.5,Math.sin(i)*1.4,z);
+    scene.add(mesh);
+    meshObjs.push({mesh,isWire:false});
+
+    const wf = new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:colors[i],wireframe:true,transparent:true,opacity:0.15}));
+    wf.position.copy(mesh.position);
+    wf.scale.setScalar(1.25);
+    scene.add(wf);
+    meshObjs.push({mesh:wf,isWire:true});
+  });
+
+  function resize(){
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  }
+  window.addEventListener('resize',resize);
+
+  let scrollProgress=0;
+  function onScroll(){
+    const doc=document.documentElement;
+    const max=(doc.scrollHeight-window.innerHeight)||1;
+    scrollProgress=Math.min(1,Math.max(0,window.scrollY/max));
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+
+  let mouseX=0,mouseY=0;
+  window.addEventListener('mousemove',e=>{
+    mouseX=(e.clientX/window.innerWidth-.5);
+    mouseY=(e.clientY/window.innerHeight-.5);
+  },{passive:true});
+
+  const totalDepth=SECTION_Z[SECTION_Z.length-1]-20;
+  let t=0;
+  function animate(){
+    t+=0.005;
+    const targetZ=8+scrollProgress*totalDepth;
+    camera.position.z+=(targetZ-camera.position.z)*0.08;
+    camera.position.x+=((mouseX*2.2)-camera.position.x)*0.04;
+    camera.position.y+=((-mouseY*1.4+Math.sin(t*0.6)*0.3)-camera.position.y)*0.04;
+    camera.lookAt(0,0,camera.position.z-20);
+
+    stars.rotation.y+=0.0005;
+
+    meshObjs.forEach(mo=>{
+      mo.mesh.rotation.x+=mo.isWire?0.0008:0.0015;
+      mo.mesh.rotation.y+=mo.isWire?0.001:0.002;
+    });
+
+    pl.position.z=camera.position.z-5;
+    renderer.render(scene,camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+renderAll();
+recordVisit();
+
+// Re-observe new elements after render
+setTimeout(()=>{
+  document.querySelectorAll('.skill-card,.exp-item,.project-card,.cert-item').forEach(el=>{
+    if(!el.dataset.observed){ el.dataset.observed='1'; el.style.opacity='0'; io.observe(el); }
+  });
+},100);
+</script>
+</body>
+</html>
